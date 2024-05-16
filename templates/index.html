@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Task Manager</h1>
+    </header>
+    <main>
+      <div class="welcome-message">
+        <h2>Добро пожаловать в Task Manager!</h2>
+        <p>
+          Здесь вы можете создавать, планировать и отслеживать ваши задачи.
+          Оптимизируйте свою работу и будьте продуктивнее!
+        </p>
+      </div>
+      <form action="" method="POST">
+        <button name="login" class="btn" type="submit" value="2">Вход</button>
+        <button name="register" class="btn" type="submit" value="1">Регистрация</button>
+      </form>
+    </main>
+    <footer>
+      <p>&copy; 2023 Task Manager</p>
+    </footer>
+  </div>
+</body>
+</html>

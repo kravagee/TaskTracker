@@ -1,0 +1,57 @@
+/* Общий стиль страницы */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  color: #333; /* Серый текст */
+}
+
+/* Основной контейнер */
+.container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 800px;
+  max-width: 90%;
+  text-align: center;
+}
+
+/* Заголовок */
+h1 {
+  color: #673AB7; /* Фиолетовый */
+  margin-bottom: 20px;
+}
+
+/* Сообщение приветствия */
+.welcome-message {
+  margin-bottom: 30px;
+}
+
+/* Кнопки */
+.btn {
+  background-color: #9C27B0; /* Темно-фиолетовый */
+  color: white;
+  padding: 14px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: bold;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background-color: #7B1FA2; /* Более светлый фиолетовый */
+}
+
+/* Футер */
+footer {
+  margin-top: 40px;
+  font-size: 0.8em;
+}

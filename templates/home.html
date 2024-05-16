@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Task Manager</h1>
+    </header>
+    <main>
+      <form action="" method="POST">
+        <button name="create" value="1" class="btn">Создать новую задачу</button>
+        <button  name="view" value="2" class="btn">Перейти к задачам</button>
+      </form>
+    </main>
+    <footer>
+      <p>&copy; 2023 Task Manager</p>
+    </footer>
+  </div>
+</body>
+</html>
