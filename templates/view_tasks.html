@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Tracker - Задачи пользователя: {{username}}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/view_tasks.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Task Tracker</h1>
+    </header>
+    <main>
+      <h2>Задачи пользователя: {{ username }}</h2>
+      <ul class="task-list" id="allTasks">
+        {% for task in query %}
+          <li class="task">
+            <span class="task-name">{{ task[0] }}</span>
+            <span class="task-description">{{ task[1] }}</span>
+            <button class="edit-btn">Изменить</button>
+            <button class="delete-btn">Удалить</button>
+          </li>
+        {% endfor %}
+      </ul>
+    </main>
+    <footer>
+      <p>&copy; 2024 Task Tracker</p>
+    </footer>
+  </div>
+</body>
+</html>
