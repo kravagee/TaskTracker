@@ -1,0 +1,91 @@
+/* Общий стиль страницы */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  color: #333; /* Серый текст */
+}
+
+/* Основной контейнер */
+.container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 800px;
+  max-width: 90%;
+  text-align: center;
+}
+
+/* Заголовок */
+h1 {
+  color: #673AB7; /* Фиолетовый */
+  margin-bottom: 20px;
+}
+
+/* Заголовок задач */
+h2 {
+  margin-bottom: 10px;
+}
+
+/* Список задач */
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+/* Отдельная задача */
+.task {
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  word-break: break-all; /* Перенос строк */
+}
+
+/* Название задачи */
+.task-name {
+  flex-grow: 1;
+  margin-right: 10px;
+  text-align: left; /* Выравнивание текста в задаче влево */
+}
+
+/* Описание задачи */
+.task-description {
+  flex-grow: 2;
+  margin-right: 10px;
+  text-align: left; /* Выравнивание текста в задаче влево */
+}
+
+/* Кнопки */
+.btn, .edit-btn, .delete-btn {
+  background-color: #9C27B0; /* Темно-фиолетовый */
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: bold;
+  margin: 0 5px;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+
+.btn:hover, .edit-btn:hover, .delete-btn:hover {
+  background-color: #7B1FA2; /* Более светлый фиолетовый */
+}
+
+/* Футер */
+footer {
+  margin-top: 40px;
+  font-size: 0.8em;
+}
