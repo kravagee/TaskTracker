@@ -1,3 +1,4 @@
+/* Общий стиль страницы */
 body {
   font-family: 'Roboto', sans-serif;
   background-color: #f4f4f4;
@@ -6,65 +7,74 @@ body {
   align-items: center;
   min-height: 100vh;
   margin: 0;
+  color: #333; /* Серый текст */
 }
 
-/* Контейнер для формы */
-.registration-container {
+/* Основной контейнер */
+.container {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 40px;
-  width: 400px;
+  width: 600px; /* Уменьшенная ширина */
+  max-width: 90%;
+  text-align: center;
 }
 
 /* Заголовок */
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
+h1 {
   color: #673AB7; /* Фиолетовый */
+  margin-bottom: 20px;
+}
+
+/* Заголовок формы */
+h2 {
+  margin-bottom: 10px;
 }
 
 /* Форма */
-form {
+#confirmEmailForm {
   display: flex;
   flex-direction: column;
+  gap: 15px;
 }
 
 /* Поля ввода */
-input[type="text"],
-input[type="password"],
-input[type="email"]{
-  padding: 12px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f5f5f5;
+#confirmEmailForm div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-/* Кнопка регистрации */
-button[type="submit"] {
+#confirmEmailForm label {
+  font-weight: bold;
+}
+
+#confirmEmailForm input[type="text"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Кнопка */
+#confirmEmailForm button {
   background-color: #9C27B0; /* Темно-фиолетовый */
   color: white;
-  padding: 14px 25px;
+  padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
   font-weight: bold;
-}
-
-button[type="submit"]:hover {
-  background-color: #7B1FA2; /* Более светлый фиолетовый */
-}
-
-/* Ссылка на вход */
-.login-link {
-  text-align: center;
-  margin-top: 15px;
-  color: #673AB7; /* Фиолетовый */
   text-decoration: none;
 }
 
-.login-link:hover {
-  text-decoration: underline;
+#confirmEmailForm button:hover {
+  background-color: #7B1FA2; /* Более светлый фиолетовый */
+}
+
+/* Футер */
+footer {
+  margin-top: 40px;
+  font-size: 0.8em;
 }

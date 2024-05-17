@@ -1,8 +1,20 @@
 from flask import Flask, request, render_template, redirect, url_for
+from flask_bcrypt import Bcrypt
+from flask_mail import Mail, Message
 import sqlite3
+import secrets
+import datetime
 
 
 server = Flask(__name__)
+bcrypt = Bcrypt(server)
+server.config['SECRET_KEY'] = secrets.token_urlsafe(32)
+server.config['MAIL_SERVER'] = 'smtp.yandex.ru'
+server.config['MAIL_PORT'] = 465
+server.config['MAIL_USE_SSL'] = True
+server.config['MAIL_USERNAME'] = 'task.tracker.2024@yandex.ru'
+server.config['MAIL_PASSWORD'] = 'sbibgayalkjxdyou'
+mail = Mail(server)
 
 
 @server.route('/', methods=['GET', 'POST'])
@@ -23,12 +35,11 @@ def login():
         password = request.form['password']
         con = sqlite3.connect('project.db')
         cur = con.cursor()
-        print(request.form['username'], request.form['password'])
-        query = f'''SELECT * FROM users WHERE login = "{log}" AND password = "{password}"'''
+        query = f'''SELECT hash_password FROM users WHERE login = "{log}" "'''
         data = cur.execute(query).fetchall()
         con.commit()
         con.close()
-        if data:
+        if data and bcrypt.check_password_hash(''.join(data), password):
             return redirect(url_for('home', username=log))
         else:
             return render_template('login.html')
@@ -39,21 +50,28 @@ def login():
 @server.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
+        email = request.form['email']
         log = request.form['username']
         password = request.form['password']
         con = sqlite3.connect('project.db')
         cur = con.cursor()
-        query = cur.execute(f'''SELECT login FROM users WHERE login = "{log}"''').fetchall()
-        if len(query) == 1:
+        query = cur.execute(f'''SELECT login FROM users WHERE login="{log}"''').fetchall()
+        query_sec = cur.execute(f'''SELECT email FROM users WHERE email="{email}"''').fetchall()
+        if len(list(query)) == 1 and len(list(query_sec)) == 1:
             con.close()
-            return {'anwser': 'Такой пользователь уже существует.'}
+            return render_template('register.html', response='Пользователь с таким именем '
+                                                             'или адресом электронной почты уже существует')
         else:
-            query = f'''INSERT INTO users (login, password) VALUES ("{log}", 
-            "{password}")'''
+            token = secrets.token_urlsafe(32)
+            msg = Message(f'Confirm your mail for Task Tracker! Your code : {token}',
+                          sender='task.tracker.2024@yandex.ru', recipients=[email])
+            mail.send(msg)
+            query = f'''INSERT INTO users (login, hash_password, token, is_verified, email) VALUES ("{log}", 
+            "{bcrypt.generate_password_hash(password)}", "{token}", "{0}", "{email}")'''
             cur.execute(query)
             con.commit()
             con.close()
-            return redirect(url_for('home', username=log))
+            return redirect(url_for('verify_email', username=log))
     else:
         return render_template('register.html')
 
@@ -131,6 +149,24 @@ def view_task(username, name_task):
         query = cur.execute(f'''SELECT description_task FROM tasks 
         WHERE login="{username}" and task="{name_task}"''').fetchone()
         return render_template('view_task.html', description_task=query[0], name_task=name_task)
+
+
+@server.route('/verify_email/<username>/', methods=['GET', 'POST'])
+def verify_email(username):
+    if request.method == 'POST':
+        print(123)
+        token = request.form['confirmationToken']
+        con = sqlite3.connect('project.db')
+        cur = con.cursor()
+        query = cur.execute(f'''SELECT token FROM users WHERE login="{username}"''').fetchone()
+        print(query)
+        if query[0] == token:
+            query = cur.execute(f'''UPDATE users SET is_verified = 1 WHERE login="{username}"''')
+            return redirect(url_for('home', username=username))
+        else:
+            return render_template('verify_email.html', response='Вы ввели токен не правильно. Проверьте ещё раз.')
+    else:
+        return render_template('verify_email.html')
 
 
 server.run()
