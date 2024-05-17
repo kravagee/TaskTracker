@@ -9,6 +9,10 @@
 <body>
   <div class="container">
     <header>
+      <form action="" method="POST">
+        <input type="hidden" name="dummy" value="dummy">
+        <button class="btn" type="submit" name="back-btn" value="3">Вернуться на домашнюю страницу</button>
+      </form>
       <h1>Task Tracker</h1>
     </header>
     <main>
@@ -18,8 +22,12 @@
           <li class="task">
             <span class="task-name">{{ task[0] }}</span>
             <span class="task-description">{{ task[1] }}</span>
-            <button class="edit-btn">Изменить</button>
-            <button class="delete-btn">Удалить</button>
+            <form method="POST" action="">
+              <input type="hidden" name="task_name" value="{{ task[0] }}">
+              <button class="view-btn" type="submit" name="viewButton" value="1">Просмотреть</button>
+              <input type="hidden" name="task_name" value="{{ task[0] }}">
+              <button class="delete-btn" type="submit" name="deleteButton" value="2">Удалить</button>
+            </form>
           </li>
         {% endfor %}
       </ul>

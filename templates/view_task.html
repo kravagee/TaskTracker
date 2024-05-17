@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Tracker - Просмотр задачи</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/view_task.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <form action="" method="POST">
+        <button class="btn" type="submit" name="back-btn" value="1">Просмотреть все задачи</button>
+      </form>
+      <h1>Task Tracker</h1>
+    </header>
+    <main>
+      <h2>Задача: {{ name_task }}</h2>
+
+      <div class="task-details">
+        <p class="task-description">{{ description_task }}</p>
+      </div>
+
+      <div class="task-actions">
+        <form action="" method="POST">
+              <input type="hidden" name="task_name" value="{{ name_task }}">
+              <button class="delete-btn" type="submit" name="deleteButton" value="2">Удалить</button>
+        </form>
+      </div>
+    </main>
+    <footer>
+      <p>&copy; 2024 Task Tracker</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Tracker - Создать задачу</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/create_task.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Task Tracker</h1>
+    </header>
+    <main>
+      <h2>Создать задачу</h2>
+      <form id="createTaskForm" action="" method="POST">
+        <div>
+          <label for="taskName">Название задачи:</label>
+          <input type="text" id="taskName" name="taskName" required>
+        </div>
+        <div>
+          <label for="taskDescription">Описание задачи:</label>
+          <textarea id="taskDescription" name="taskDescription"></textarea>
+        </div>
+        <button type="submit" class="btn">Создать задачу</button>
+      </form>
+    </main>
+    <footer>
+      <p>&copy; 2024 Task Tracker</p>
+    </footer>
+  </div>
+</body>
+</html>

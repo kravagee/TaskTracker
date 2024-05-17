@@ -16,7 +16,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 40px;
-  width: 800px;
+  width: 600px; /* Уменьшенная ширина */
   max-width: 90%;
   text-align: center;
 }
@@ -27,60 +27,50 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* Заголовок задач */
+/* Заголовок формы */
 h2 {
   margin-bottom: 10px;
 }
 
-/* Список задач */
-.task-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 20px;
-}
-
-/* Отдельная задача */
-.task {
-  background-color: #fff;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Форма */
+#createTaskForm {
   display: flex;
-  align-items: center;
-  word-break: break-all; /* Перенос строк */
+  flex-direction: column;
+  gap: 15px;
 }
 
-/* Название задачи */
-.task-name {
-  flex-grow: 1;
-  margin-right: 10px;
-  text-align: left; /* Выравнивание текста в задаче влево */
+/* Поля ввода */
+#createTaskForm div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-/* Описание задачи */
-.task-description {
-  flex-grow: 2;
-  margin-right: 10px;
-  text-align: left; /* Выравнивание текста в задаче влево */
+#createTaskForm label {
+  font-weight: bold;
 }
 
-/* Кнопки */
-.btn, .edit-btn, .delete-btn, .view-btn {
+#createTaskForm input[type="text"],
+#createTaskForm textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Кнопка */
+#createTaskForm button {
   background-color: #9C27B0; /* Темно-фиолетовый */
   color: white;
-  padding: 8px 15px;
+  padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
   font-weight: bold;
-  margin: 0 5px;
   text-decoration: none;
-  font-size: 0.9em;
 }
 
-.btn:hover, .edit-btn:hover, .delete-btn:hover {
+#createTaskForm button:hover {
   background-color: #7B1FA2; /* Более светлый фиолетовый */
 }
 
