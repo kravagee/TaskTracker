@@ -101,7 +101,7 @@ def register():
     return render_template('register.html')
 
 
-@server.route('/home/<username>/', methods=['GET', 'POST'])
+@server.route('/home/<username>', methods=['GET', 'POST'])
 @login_required
 def home(username):
     if request.method == 'POST':
@@ -143,6 +143,8 @@ def view_tasks(username):
 @login_required
 def create_task(username):
     if request.method == 'POST':
+        if list(request.form.values())[0] == '1':
+            return redirect(url_for('home', username=username))
         name_task = request.form['taskName']
         description_task = request.form['taskDescription']
         con = sqlite3.connect('project.db')

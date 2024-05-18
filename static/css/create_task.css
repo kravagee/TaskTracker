@@ -70,6 +70,18 @@ h2 {
   text-decoration: none;
 }
 
+#back-btn button {
+  background-color: #9C27B0; /* Темно-фиолетовый */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: bold;
+  text-decoration: none;
+}
+
 #createTaskForm button:hover {
   background-color: #7B1FA2; /* Более светлый фиолетовый */
 }
