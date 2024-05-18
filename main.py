@@ -35,14 +35,17 @@ def login():
         password = request.form['password']
         con = sqlite3.connect('project.db')
         cur = con.cursor()
-        query = f'''SELECT hash_password FROM users WHERE login = "{log}" "'''
-        data = cur.execute(query).fetchall()
+        query = f'''SELECT hash_password, is_verified FROM users WHERE login="{log}"'''
+        data = cur.execute(query).fetchone()
         con.commit()
         con.close()
-        if data and bcrypt.check_password_hash(''.join(data), password):
-            return redirect(url_for('home', username=log))
+        if data[1] == 1:
+            if data and bcrypt.check_password_hash(data[0], password):
+                return redirect(url_for('home', username=log))
+            else:
+                return render_template('login.html', response='Вы неправильно ввели имя пользователя/пароль')
         else:
-            return render_template('login.html')
+            return redirect(url_for('verify_email', username=log, response='Вы не подтверили почту.'))
     else:
         return render_template('login.html')
 
@@ -57,7 +60,7 @@ def register():
         cur = con.cursor()
         query = cur.execute(f'''SELECT login FROM users WHERE login="{log}"''').fetchall()
         query_sec = cur.execute(f'''SELECT email FROM users WHERE email="{email}"''').fetchall()
-        if len(list(query)) == 1 and len(list(query_sec)) == 1:
+        if len(list(query)) >= 1 or len(list(query_sec)) >= 1:
             con.close()
             return render_template('register.html', response='Пользователь с таким именем '
                                                              'или адресом электронной почты уже существует')
@@ -67,7 +70,7 @@ def register():
                           sender='task.tracker.2024@yandex.ru', recipients=[email])
             mail.send(msg)
             query = f'''INSERT INTO users (login, hash_password, token, is_verified, email) VALUES ("{log}", 
-            "{bcrypt.generate_password_hash(password)}", "{token}", "{0}", "{email}")'''
+            "{bcrypt.generate_password_hash(password).decode("utf-8")}", "{token}", "{0}", "{email}")'''
             cur.execute(query)
             con.commit()
             con.close()
@@ -152,21 +155,23 @@ def view_task(username, name_task):
 
 
 @server.route('/verify_email/<username>/', methods=['GET', 'POST'])
-def verify_email(username):
+def verify_email(username, response=''):
     if request.method == 'POST':
-        print(123)
         token = request.form['confirmationToken']
         con = sqlite3.connect('project.db')
         cur = con.cursor()
         query = cur.execute(f'''SELECT token FROM users WHERE login="{username}"''').fetchone()
-        print(query)
         if query[0] == token:
             query = cur.execute(f'''UPDATE users SET is_verified = 1 WHERE login="{username}"''')
+            con.commit()
+            con.close()
             return redirect(url_for('home', username=username))
         else:
+            con.commit()
+            con.close()
             return render_template('verify_email.html', response='Вы ввели токен не правильно. Проверьте ещё раз.')
     else:
-        return render_template('verify_email.html')
+        return render_template('verify_email.html', response=response)
 
 
 server.run()
