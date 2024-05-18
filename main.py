@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail, Message
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import sqlite3
 import secrets
 import datetime
@@ -15,6 +16,26 @@ server.config['MAIL_USE_SSL'] = True
 server.config['MAIL_USERNAME'] = 'task.tracker.2024@yandex.ru'
 server.config['MAIL_PASSWORD'] = 'sbibgayalkjxdyou'
 mail = Mail(server)
+login_manager = LoginManager(server)
+login_manager.login_view = '/'
+
+
+@login_manager.user_loader
+def load_user(username):
+    con = sqlite3.connect('project.db')
+    cur = con.cursor()
+    query = cur.execute(f'''SELECT id, hash_password WHERE login={username}''').fetchone()
+    return User(query[0], username, query[1])
+
+
+class User(UserMixin):
+    def __init__(self, id, username, hash_password):
+        self.id = id
+        self.username = username
+        self.hash_password = hash_password
+
+    def get_id(self):
+        return self.id
 
 
 @server.route('/', methods=['GET', 'POST'])
@@ -24,8 +45,7 @@ def index():
             return redirect(url_for('register'))
         elif list(request.form.values())[0] == '2':
             return redirect(url_for('login'))
-    if request.method == 'GET':
-        return render_template('index.html')
+    return render_template('index.html')
 
 
 @server.route('/login', methods=['GET', 'POST'])
@@ -35,19 +55,18 @@ def login():
         password = request.form['password']
         con = sqlite3.connect('project.db')
         cur = con.cursor()
-        query = f'''SELECT hash_password, is_verified FROM users WHERE login="{log}"'''
+        query = f'''SELECT id, hash_password, is_verified FROM users WHERE login="{log}"'''
         data = cur.execute(query).fetchone()
         con.commit()
         con.close()
-        if data[1] == 1:
-            if data and bcrypt.check_password_hash(data[0], password):
+        if data[2] == 1:
+            if data and bcrypt.check_password_hash(data[1], password):
+                user = load_user(log)
+                login(user)
                 return redirect(url_for('home', username=log))
-            else:
-                return render_template('login.html', response='Вы неправильно ввели имя пользователя/пароль')
-        else:
-            return redirect(url_for('verify_email', username=log, response='Вы не подтверили почту.'))
-    else:
-        return render_template('login.html')
+            return render_template('login.html', response='Вы неправильно ввели имя пользователя/пароль')
+        return redirect(url_for('verify_email', username=log, response='Вы не подтверили почту.'))
+    return render_template('login.html')
 
 
 @server.route('/register', methods=['POST', 'GET'])
@@ -75,11 +94,11 @@ def register():
             con.commit()
             con.close()
             return redirect(url_for('verify_email', username=log))
-    else:
-        return render_template('register.html')
+    return render_template('register.html')
 
 
 @server.route('/home/<username>/', methods=['GET', 'POST'])
+@login_required
 def home(username):
     if request.method == 'POST':
         if list(request.form.values())[0] == '1':
@@ -87,12 +106,13 @@ def home(username):
         elif list(request.form.values())[0] == '2':
             return redirect(url_for('view_tasks', username=username))
         elif list(request.form.values())[0] == '3':
+            logout_user()
             return redirect(url_for('index'))
-    else:
-        return render_template('home.html')
+    return render_template('home.html')
 
 
-@server.route('/view_tasks/<username>/', methods=['GET', 'POST'])
+@server.route('/view_tasks/<username>', methods=['GET', 'POST'])
+@login_required
 def view_tasks(username):
     if request.method == 'POST':
         if list(request.form.values())[1] == '1':
@@ -108,16 +128,15 @@ def view_tasks(username):
             return render_template('view_tasks.html', query=query, username=username)
         elif list(request.form.values())[1] == '3':
             return redirect(url_for('home', username=username))
-    else:
-        con = sqlite3.connect('project.db')
-        cur = con.cursor()
-        query = cur.execute(f'''SELECT task, description_task FROM tasks WHERE login="{username}"''').fetchall()
-        con.commit()
-        con.close()
-        return render_template('view_tasks.html', query=query, username=username)
+    con = sqlite3.connect('project.db')
+    cur = con.cursor()
+    query = cur.execute(f'''SELECT task, description_task FROM tasks WHERE login="{username}"''').fetchall()
+    con.close()
+    return render_template('view_tasks.html', query=query, username=username)
 
 
-@server.route('/create_task/<username>/', methods=['GET', 'POST'])
+@server.route('/create_task/<username>', methods=['GET', 'POST'])
+@login_required
 def create_task(username):
     if request.method == 'POST':
         name_task = request.form['taskName']
@@ -132,7 +151,8 @@ def create_task(username):
         return render_template('create_task.html')
 
 
-@server.route('/view_task/<username>/<name_task>/', methods=['GET', 'POST'])
+@server.route('/view_task/<username>/<name_task>', methods=['GET', 'POST'])
+@login_required
 def view_task(username, name_task):
     if request.method == 'POST':
         if list(request.form.values())[0] == '1':
@@ -145,16 +165,15 @@ def view_task(username, name_task):
             query = cur.execute(f'''SELECT task, description_task FROM tasks WHERE login="{username}"''').fetchall()
             con.commit()
             con.close()
-            return render_template('view_tasks.html', query=query, username=username)
-    else:
-        con = sqlite3.connect('project.db')
-        cur = con.cursor()
-        query = cur.execute(f'''SELECT description_task FROM tasks 
-        WHERE login="{username}" and task="{name_task}"''').fetchone()
-        return render_template('view_task.html', description_task=query[0], name_task=name_task)
+            return redirect(url_for('view_tasks.html', query=query, username=username))
+    con = sqlite3.connect('project.db')
+    cur = con.cursor()
+    query = cur.execute(f'''SELECT description_task FROM tasks 
+    WHERE login="{username}" and task="{name_task}"''').fetchone()
+    return render_template('view_task.html', description_task=query[0], name_task=name_task)
 
 
-@server.route('/verify_email/<username>/', methods=['GET', 'POST'])
+@server.route('/verify_email/<username>', methods=['GET', 'POST'])
 def verify_email(username, response=''):
     if request.method == 'POST':
         token = request.form['confirmationToken']
@@ -163,15 +182,15 @@ def verify_email(username, response=''):
         query = cur.execute(f'''SELECT token FROM users WHERE login="{username}"''').fetchone()
         if query[0] == token:
             query = cur.execute(f'''UPDATE users SET is_verified = 1 WHERE login="{username}"''')
+            user = load_user(username)
+            login(user)
             con.commit()
             con.close()
             return redirect(url_for('home', username=username))
-        else:
-            con.commit()
-            con.close()
-            return render_template('verify_email.html', response='Вы ввели токен не правильно. Проверьте ещё раз.')
-    else:
-        return render_template('verify_email.html', response=response)
+        con.commit()
+        con.close()
+        return render_template('verify_email.html', response='Вы ввели токен не правильно. Проверьте ещё раз.')
+    return render_template('verify_email.html', response=response)
 
 
 server.run()
