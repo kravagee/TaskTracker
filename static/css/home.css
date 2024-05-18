@@ -27,6 +27,11 @@ h1 {
   margin-bottom: 20px;
 }
 
+h2 {
+   color: #673AB7; /* Фиолетовый */
+   margin-bottom: 20px;
+}
+
 /* Кнопки */
 .btn {
   background-color: #9C27B0; /* Темно-фиолетовый */

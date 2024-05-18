@@ -21,11 +21,12 @@ login_manager.login_view = '/'
 
 
 @login_manager.user_loader
-def load_user(username):
+def load_user(id):
     con = sqlite3.connect('project.db')
     cur = con.cursor()
-    query = cur.execute(f'''SELECT id, hash_password WHERE login={username}''').fetchone()
-    return User(query[0], username, query[1])
+    query = cur.execute(f'''SELECT login, hash_password FROM users WHERE id="{id}"''').fetchone()
+    con.close()
+    return User(id, query[0], query[1])
 
 
 class User(UserMixin):
@@ -57,13 +58,16 @@ def login():
         cur = con.cursor()
         query = f'''SELECT id, hash_password, is_verified FROM users WHERE login="{log}"'''
         data = cur.execute(query).fetchone()
-        con.commit()
-        con.close()
         if data[2] == 1:
             if data and bcrypt.check_password_hash(data[1], password):
-                user = load_user(log)
-                login(user)
+                query = cur.execute(f'''SELECT id, hash_password FROM users WHERE login="{log}"''').fetchone()
+                user = User(query[0], log, query[1])
+                login_user(user)
+                con.commit()
+                con.close()
                 return redirect(url_for('home', username=log))
+            con.commit()
+            con.close()
             return render_template('login.html', response='Вы неправильно ввели имя пользователя/пароль')
         return redirect(url_for('verify_email', username=log, response='Вы не подтверили почту.'))
     return render_template('login.html')
@@ -108,7 +112,7 @@ def home(username):
         elif list(request.form.values())[0] == '3':
             logout_user()
             return redirect(url_for('index'))
-    return render_template('home.html')
+    return render_template('home.html', username=username)
 
 
 @server.route('/view_tasks/<username>', methods=['GET', 'POST'])
@@ -182,8 +186,9 @@ def verify_email(username, response=''):
         query = cur.execute(f'''SELECT token FROM users WHERE login="{username}"''').fetchone()
         if query[0] == token:
             query = cur.execute(f'''UPDATE users SET is_verified = 1 WHERE login="{username}"''')
-            user = load_user(username)
-            login(user)
+            query = cur.execute(f'''SELECT id, hash_password FROM users WHERE login="{username}"''').fetchone()
+            user = User(query[0], username, query[1])
+            login_user(user)
             con.commit()
             con.close()
             return redirect(url_for('home', username=username))
