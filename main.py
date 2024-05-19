@@ -170,7 +170,7 @@ def view_task(username, name_task):
             query = cur.execute(f'''SELECT task, description_task FROM tasks WHERE login="{username}"''').fetchall()
             con.commit()
             con.close()
-            return redirect(url_for('view_tasks.html', query=query, username=username))
+            return redirect(url_for('view_tasks', query=query, username=username))
     con = sqlite3.connect('project.db')
     cur = con.cursor()
     query = cur.execute(f'''SELECT description_task FROM tasks 
