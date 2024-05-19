@@ -1,10 +1,9 @@
 from flask import Flask, request, render_template, redirect, url_for
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail, Message
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 import sqlite3
 import secrets
-import datetime
 
 
 server = Flask(__name__)
@@ -124,7 +123,7 @@ def view_tasks(username):
         elif list(request.form.values())[1] == '2':
             con = sqlite3.connect('project.db')
             cur = con.cursor()
-            query = cur.execute(f'''DELETE FROM tasks WHERE login="{username}" 
+            cur.execute(f'''DELETE FROM tasks WHERE login="{username}" 
             AND task="{list(request.form.values())[0]}"''')
             query = cur.execute(f'''SELECT task, description_task FROM tasks WHERE login="{username}"''').fetchall()
             con.commit()
@@ -166,7 +165,7 @@ def view_task(username, name_task):
         elif list(request.form.values())[1] == '2':
             con = sqlite3.connect('project.db')
             cur = con.cursor()
-            query = cur.execute(f'''DELETE FROM tasks WHERE login="{username}" 
+            cur.execute(f'''DELETE FROM tasks WHERE login="{username}" 
             AND task="{list(request.form.values())[0]}"''')
             query = cur.execute(f'''SELECT task, description_task FROM tasks WHERE login="{username}"''').fetchall()
             con.commit()
@@ -187,7 +186,7 @@ def verify_email(username, response=''):
         cur = con.cursor()
         query = cur.execute(f'''SELECT token FROM users WHERE login="{username}"''').fetchone()
         if query[0] == token:
-            query = cur.execute(f'''UPDATE users SET is_verified = 1 WHERE login="{username}"''')
+            cur.execute(f'''UPDATE users SET is_verified = 1 WHERE login="{username}"''')
             query = cur.execute(f'''SELECT id, hash_password FROM users WHERE login="{username}"''').fetchone()
             user = User(query[0], username, query[1])
             login_user(user)
